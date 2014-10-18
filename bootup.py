@@ -8,6 +8,13 @@ from time import sleep
 from pygame import mixer
 import easygui
 
+def alarm():
+	print "WAAAKE UP!!!!"
+	mixer.init()
+	mixer.music.load('/home/divya/Music/pink')
+	mixer.music.play()
+	easygui.msgbox(msg="Time up!!!!", title= "J.A.R.V.I.S")
+
 hours = float(input("Please enter the hours? 0 to 23 "))
 
 if hours < 0 or hours > 23:
@@ -20,27 +27,33 @@ if minutes < 0 or minutes > 59:
 	print "Invalid value for minutes, should be >= 0 or <=59"
 	sys.exit(1)
 
-if minutes == 1:
-	unit_word = " minute"
-else:
-	unit_word = " minutes"
-
 now_hour = time.strftime("%H")
 now_min = time.strftime("%M")
+now_sec = time.strftime("%S")
 
 if float(now_hour) != hours or float(now_min) != minutes:
-	min_hours = (hours - float(now_hour)) * 60
+	min_hours = (hours - float(now_hour))
 	min_mins = minutes - float(now_min)
-	total = min_hours + min_mins
-	sec = total * 60
+	total = (min_hours*60) + min_mins
+	sec = (total * 60) - float(now_sec)
+
+	if min_mins == 1:
+		unit_word = "minute"
+	else:
+		unit_word = "minutes"
+	
 	if total > 0:
-			print "Sleeping for " + str(total) + unit_word
+			print "Sleeping for", int(min_hours), "hours and", int(min_mins), unit_word
 			sleep(sec)
-			print "WAAAKE UP!!!!"
-			mixer.init()
-			mixer.music.load('/home/divya/Music/pink')
-			mixer.music.play()
-			easygui.msgbox(msg="Time up!!!!", title= "J.A.R.V.I.S")
-	for i in range(5):
-		print "Alarm ringing!!", chr(7)
-		sleep(1)
+			alarm()
+			msg = "Click continue to snooze for 10 minutes?"
+			title = "J.A.R.V.I.S"
+			if easygui.ccbox(msg, title):
+				print "Snoozing for 10 minutes"
+				mixer.music.stop()
+				sleep(600)
+				alarm()
+			else:
+				for i in range(5):
+					print "Alarm ringing!!", chr(7)
+					sleep(1)
